@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #map{
+            height: 390px;
+            width: 490px;
+            margin-left: 50px;
+            border: solid teal;
+
+        }
+        #container{
+            display: flex;
+            margin-left: 380px;
+            margin-top: 100px;
+        }
+        #container>div{
+            border: solid teal;
+            text-align: center;
+            width: 300px;
+            height: 390px;
+            font-weight: bold;
+            color: rgb(255, 14, 215);
+        }
+        #city{
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        button{
+            font-weight: bold;
+            color: rgb(255, 14, 215);
+        }
+        #navbar{
+            height: 80px;
+            width: 100%;
+            margin: auto;
+           
+            background-color: rgb(241, 232, 215);
+        }
+        #size{
+            margin-top: -10px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: rgb(255, 14, 215);
+        }
+        #line{
+            font-weight: bold;
+            color: rgb(255, 14, 215);
+            margin-left: 100px;
+            text-align: center;
+        }
+        #line1{  
+            font-weight: bold;
+            color: rgb(255, 14, 215);
+            margin-left: 200px;
+            text-align: center;
+        }
+        #weather {
+        height:300px;
+        width:90%;
+        margin-top: 3%;
+        display: flex;
+        margin-left: 4%;
+        justify-content: space-around;
+        /* margin-right: 5px; */
+      }
+      #weather>div{
+      
+          width:50%;
+          background-color: rgb(255, 14, 215);
+          margin-left: 2%;
+      }
+      #div{
+          text-align: center;
+          color: rgb(178, 252, 252);
+          border-radius: 30px;
+      }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <p id="size">Daily Weather Report</p>
+        </div>
+    <center>
+    <input type="text" id="city" placeholder="Enter City">
+    <div>
+        <button onclick="getWeather()">Get Weather</button>
+    </div>
+    
+    </center>
+    <div id="container"></div>
+    
+    <div id="weather"></div>
+    
+
+</body>
+</html>
+<script>
+    async function getWeather(){
+        try{
+            let city=document.getElementById('city').value
+
+            let res=await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=070263d29127d18e1b69c774a996ef65&units=metric`)
+
+            //let res=await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=e4c70ce6a6821649a416cb9521d5f4f8&units=metric`);
+
+        
+            let data=await res.json();
+
+            
+
+            console.log(data);
+            if(data.message==="city not found"){
+                notfound();
+            }
+            else if(data.message==="Nothing to geocode")
+            {
+                notfound1()
+            }
+            else{
+                
+            appendData(data);    
+            }   
+            let res1=await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=current,hourly,minutely&appid=e4b61541705c6cb668a4b697b84d3660&units=metric`); 
+            let data2=await res1.json();
+             let arr= data2.daily;
+            console.log(arr); 
+            forecast(arr)   
+        }
+        catch(err){
+            console.log("error", err);
+            
+        }
+       
+    }
+    //Show min temp, max temp, wind, clounds, sunrise, sunset etc.
+    function appendData(data){
+
+        document.querySelector("#container").innerHTML=""
+        div=document.createElement("div")
+
+
+        var name=document.createElement("p")
+        name.innerText="City 🏙️:"+" "+data.name
+
+        var temp=document.createElement("p")
+        temp.innerText="Temperature :"+" "+data.main.temp+" C"
+
+        let pressure=document.createElement("p")
+        pressure.innerText="Wind Pressure :"+" "+data.main.pressure+" Pa"
+
+        let humidity=document.createElement("p")
+        humidity.innerText="Humidity :"+" "+data.main.humidity
+
+        var min_temp=document.createElement("p")
+        min_temp.innerText="Minimum Temperature :"+" "+data.main.temp_max+" C"
+
+        var max_temp=document.createElement("p")
+        max_temp.innerText="Maximum Temperature :"+" "+data.main.temp_min+" C"
+
+        var wind_speed=document.createElement("p")
+        wind_speed.innerText="Wind Speed :"+" "+data.wind.speed
+
+        var clouds=document.createElement("p")
+        clouds.innerText=`Clouds : ${data.clouds.all}`
+
+        var sunrise=document.createElement("p")
+        sunrise.innerText=`Sunrise 🌄: ${data.sys.sunrise}`
+
+        var sunset=document.createElement("p")
+        sunset.innerText=`Sunset 🎑: ${data.sys.sunset}`;
+
+        var iframe=document.createElement("iframe")
+        iframe.setAttribute("id","map")
+        iframe.src=`https://www.google.com/maps/embed/v1/place?q=${data.name}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`
+
+        // console.log(min_temp,max_temp,wind_speed,clouds,sunrise,sunset)
+
+        div.append(name,sunrise,sunset,pressure,humidity,temp,min_temp,max_temp,wind_speed,clouds)
+
+        document.querySelector("#container").append(div,iframe)
+        
+    }
+
+    function forecast(arr) {
+        document.querySelector("#weather").innerHTML=null
+        arr.forEach(function(elem,index){
+        let div1=document.createElement("div");
+        div1.setAttribute("id","div")
+        let para=document.createElement("h3");
+        let days=new Date(elem.dt*1000);
+        para.innerText=days.toDateString();
+        // console.log("para:", para.innerText);
+        var icon = document.createElement("img");
+        icon.src = `http://openweathermap.org/img/wn/${elem.weather[0].icon}@2x.png`;
+        // console.log("icon:", icon);
+        var day = document.createElement("h4");
+        day.innerText = `Day: ${elem.temp.day.toFixed(0)}°C`;
+        var night = document.createElement("h4");
+        night.innerText = `Night: ${elem.temp.night.toFixed(0)}°C`;
+        div1.append(para,icon,day,night);
+        document.querySelector("#weather").append(div1);    
+        });
+     }
+
+    function notfound(){
+        document.querySelector("#container").innerHTML=""
+        var line=document.createElement("h2")
+        line.setAttribute("id","line")
+        line.innerText="Location Not found Please choose correct Location  🔝"
+        document.querySelector("#container").append(line)
+
+    }
+
+    function notfound1(){
+        document.querySelector("#container").innerHTML=""
+        var line=document.createElement("h2")
+        line.setAttribute("id","line1")
+        line.innerText="Please Enter The Location 🔝"
+        document.querySelector("#container").append(line)
+
+    }
+</script>
