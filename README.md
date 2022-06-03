@@ -2,7 +2,7 @@
 
 This Repository is contain the Source code of the __Weather Application__
 
-![Home Page](images/weather.jpeg "Home Page")
+![Home Page](/weather/images/weather.png "Home Page")
 
 You can see the website [HERE](https://zesty-sprinkles-bc9a08.netlify.app/)
 
