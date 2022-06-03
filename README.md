@@ -10,7 +10,7 @@ You can see the website [HERE](https://zesty-sprinkles-bc9a08.netlify.app/)
 <hr/>
 This website help the users to check daily weather Reports and Weekly Weather reports. And i made this my self
 
-[chaitu](https://github.com/soumitha18) 
+[chaitu](https://github.com/chaitu786) 
 
 
 ### Technologies
